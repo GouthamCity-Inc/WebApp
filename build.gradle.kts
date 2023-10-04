@@ -42,6 +42,7 @@ dependencies {
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 	implementation("com.intuit.karate:karate-core:1.4.0")
 	testImplementation("com.intuit.karate:karate-junit5:1.4.0")
+	implementation("org.mariadb.jdbc:mariadb-java-client:3.2.0")
 
 }
 
