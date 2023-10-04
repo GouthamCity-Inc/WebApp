@@ -19,17 +19,14 @@ class DatabaseBootstrapper(
     private val bcryptEncoder: BcryptEncoder
 ): ApplicationListener<ApplicationReadyEvent> {
 
-    @Value("\${application.config.csv-path}")
+    @Value("\${application.config.csv-file}")
     private lateinit var filePath: String
-
-    @Value("\${application.config.user-file}")
-    private lateinit var fileName: String
 
     override fun onApplicationEvent(event: ApplicationReadyEvent) {
         logger.info { "Bootstrapping the database" }
-        logger.info { filePath + fileName }
+        logger.info { filePath }
 
-        csvReader().open(filePath + fileName) {
+        csvReader().open(filePath) {
             readAllWithHeaderAsSequence().forEach { row: Map<String, String> ->
 
                 val account = Account(
