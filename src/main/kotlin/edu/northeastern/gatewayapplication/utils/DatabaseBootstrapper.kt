@@ -22,6 +22,8 @@ class DatabaseBootstrapper(
     @Value("\${application.config.csv-file}")
     private lateinit var filePath: String
 
+    private val utils = Utils()
+
     override fun onApplicationEvent(event: ApplicationReadyEvent) {
         logger.info { "Bootstrapping the database" }
         logger.info { filePath }
@@ -29,22 +31,19 @@ class DatabaseBootstrapper(
         csvReader().open(filePath) {
             readAllWithHeaderAsSequence().forEach { row: Map<String, String> ->
 
+                val currentTime = utils.getCurrentTimeInISO8601()
+
                 val account = Account(
                     firstName = row["first_name"]!!,
                     lastName = row["last_name"]!!,
                     email = row["email"]!!,
                     password = bcryptEncoder.encode(row["password"]!!),
-                    accountCreated = getCurrentTimeInISO8601(),
+                    accountCreated = currentTime,
+                    accountUpdated = currentTime
                 )
                 accountService.save(account)
             }
         }
-    }
-
-    fun getCurrentTimeInISO8601(): String {
-        val currentTime = ZonedDateTime.now()
-        val formatter = DateTimeFormatter.ISO_INSTANT
-        return currentTime.format(formatter)
     }
 
 }
