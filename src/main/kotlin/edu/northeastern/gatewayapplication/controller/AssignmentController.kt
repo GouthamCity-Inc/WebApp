@@ -46,12 +46,6 @@ class AssignmentController(
         if (assignment.isEmpty) {
             return ResponseEntity.notFound().build()
         }
-
-        val requestUser = accountService.getByEmail(authentication.name)
-        if (requestUser.get().id != assignment.get().user?.id) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
-        }
-
         return ResponseEntity.ok(assignment.get())
     }
 
@@ -95,7 +89,7 @@ class AssignmentController(
     fun createAssignment(authentication: Authentication, @RequestBody assignment: Assignment): ResponseEntity<Assignment> {
         logger.info { "Creating assignment for user ${authentication.name}" }
         // 400 if points are not in range or mandatory fields are not present
-        if (utils.isValidPoints(assignment.points!!).not() || utils.areMandatoryFieldsPresent(assignment).not()) {
+        if (utils.areMandatoryFieldsPresent(assignment).not() || utils.isValidPoints(assignment.points!!).not()) {
             return ResponseEntity.badRequest().build()
         }
 
