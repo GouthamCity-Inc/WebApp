@@ -46,7 +46,6 @@ class AssignmentController(
         if (assignment.isEmpty) {
             return ResponseEntity.notFound().build()
         }
-
         return ResponseEntity.ok(assignment.get())
     }
 
