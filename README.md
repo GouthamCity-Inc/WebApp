@@ -5,7 +5,7 @@
 ### CSYE 6225 Fall 2023 Project  
 ---
 
-## Prerequisites
+## Prerequisite
 
 The following are required in order to provide a successful runtime for the application:  
 
