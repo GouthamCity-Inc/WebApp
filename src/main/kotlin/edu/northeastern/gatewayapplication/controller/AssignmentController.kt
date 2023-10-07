@@ -54,16 +54,21 @@ class AssignmentController(
         logger.info { "Updating assignment for user ${authentication.name}" }
 
         val assignmentInDB = assignmentService.get(id)
-        // 404 if assignment doesn't exist
-        if (assignmentInDB.isEmpty) {
-            return ResponseEntity.notFound().build()
-        }
 
         val requestUser = accountService.getByEmail(authentication.name)
         val userOfAssignment = assignmentInDB.get().user
         // 403 if user is not the owner of the assignment
         if (requestUser.get().id != userOfAssignment!!.id) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
+        }
+
+        // 404 if assignment doesn't exist
+        if (assignmentInDB.isEmpty) {
+            return ResponseEntity.notFound().build()
+        }
+
+        if (utils.areMandatoryFieldsPresent(assignment).not() || utils.isValidPoints(assignment.points!!).not()) {
+            return ResponseEntity.badRequest().build()
         }
 
         // 400 if points are not in range
