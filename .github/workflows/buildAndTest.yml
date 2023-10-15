@@ -1,8 +1,7 @@
 name: Build & test WebApp
 
 on:
-  pull_request_target:
-    types: [ assigned, opened, synchronize, reopened ]
+  pull_request:
 
 permissions:
   contents: read
