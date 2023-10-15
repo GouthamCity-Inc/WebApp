@@ -14,11 +14,6 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
-    - run: echo ${{ secrets.AWS_ACCESS_KEY_ID }}
-    - run: echo ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-    - run: echo ${{ secrets.DB_ROOT_PASSWORD }}
-    - run: echo ${{ secrets.DB_USER }}
-    - run: echo ${{ secrets.DB_USER_PASSWORD }}
     - name: install mariadb
       uses: getong/mariadb-action@v1.1
       with:
