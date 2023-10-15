@@ -24,9 +24,9 @@ jobs:
         container port: 3306 # Optional, default value is 3306. The port of container
         mariadb version: '10.4.10' # Optional, default value is "latest". The version of the MariaDB
         mysql database: 'db' # Optional, default value is "test". The specified database which will be create
-        mysql root password: 'password' # Required if "mysql user" is empty, default is empty. The root superuser password
-        mysql user: 'user' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
-        mysql password: 'password'
+        mysql root password: ${{ secrets.DB_ROOT_PASSWORD }} # Required if "mysql user" is empty, default is empty. The root password of the MariaDB. Can use secrets, too
+        mysql user: ${{ secrets.DB_USER }} # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
+        mysql password: ${{ secrets.DB_USER_PASSWORD }}
     - name: check java version
       run: java -version && pwd && ls -al
     - name: Run karate test
