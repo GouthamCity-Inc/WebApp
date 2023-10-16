@@ -22,7 +22,7 @@ jobs:
         run: ./gradlew clean build -xTest
 
       - name: Run karate test
-        run: /.gradlew test
+        run: ./gradlew test
         env:
           ACTIONS_RUNNER_DEBUG: ${{ secrets.ACTIONS_RUNNER_DEBUG }}
 
