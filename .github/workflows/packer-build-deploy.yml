@@ -21,11 +21,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build -xTest
 
-      - name: Run karate test
-        run: ./gradlew test
-        env:
-          ACTIONS_RUNNER_DEBUG: ${{ secrets.ACTIONS_RUNNER_DEBUG }}
-
       - name: install mariadb
         uses: getong/mariadb-action@v1.1
         with:
@@ -36,6 +31,11 @@ jobs:
           mysql root password: ${{ secrets.DB_ROOT_PASSWORD }} # Required if "mysql user" is empty, default is empty. The root password of the MariaDB. Can use secrets, too
           mysql user: ${{ secrets.DB_USER }} # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
           mysql password: ${{ secrets.DB_USER_PASSWORD }}
+
+      - name: Run karate test
+        run: ./gradlew test
+        env:
+          ACTIONS_RUNNER_DEBUG: ${{ secrets.ACTIONS_RUNNER_DEBUG }}
 
       - name: setup AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
