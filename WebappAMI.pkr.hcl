@@ -17,16 +17,6 @@ variable "ami_prefix" {
   default = "csye-6225"
 }
 
-variable "access_key" {
-  type    = string
-  default = ""
-}
-
-variable "secret_key" {
-  type    = string
-  default = ""
-}
-
 variable ssh_username {
   type    = string
   default = "admin"
@@ -37,6 +27,10 @@ variable subnet_id {
   default = "subnet-03f886341a73639f9"
 }
 
+variable aws_profile {
+  type    = string
+  default = "default"
+}
 
 locals {
   timestamp       = regex_replace(timestamp(), "[- TZ:]", "")
@@ -51,10 +45,9 @@ source "amazon-ebs" "debian_ami" {
     "us-east-1",
   ]
   ami_users = ["${local.demo_account_id}"]
-  #   access_key      = "${var.access_key}}"
-  #   secret_key      = "${var.secret_key}}"
+
   instance_type = "t2.micro"
-  profile       = "dev" # remove this before pushing to repo
+  profile       = "${var.aws_profile}" # remove this before pushing to repo
   region        = "${var.aws_region}"
   subnet_id     = "${var.subnet_id}"
   source_ami_filter {
@@ -81,17 +74,19 @@ build {
     "source.amazon-ebs.debian_ami",
   ]
 
+  provisioner "file" {
+    sources = [
+      "./build/libs/gatewayapplication-0.0.1-SNAPSHOT.jar",
+      "./users.csv"
+    ]
+    destination = "/tmp/"
+  }
+
   provisioner "shell" {
     environment_vars = [
       "DEBIAN_FRONTEND=noninteractive",
       "CHECKPOINT_DISABLE=1"
     ]
-    inline = [
-      "echo Installing nginx",
-      "sudo apt-get update",
-      "sudo apt-get upgrade -y",
-      "sudo apt-get install nginx -y",
-      "sudo apt-get clean",
-    ]
+    script = "./scripts/setup.sh"
   }
 }

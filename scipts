@@ -1,0 +1,44 @@
+#!/bin/bash
+
+echo "#################### Setting up the environment for the webapp... ####################"
+
+# Update package repositories
+echo "#################### Updating package repositories...####################"
+sudo apt-get update
+echo "#################### Package repositories updated. ####################"
+
+echo "#################### Upgrading package repositories... ####################"
+sudo apt-get upgrade -y
+echo "#################### Package repositories upgraded. ####################"
+
+# Install MariaDB server
+echo "#################### Installing MariaDB server... ####################"
+if sudo DEBIAN_FRONTEND=noninteractive apt-get install -y mariadb-server; then
+    echo "#################### MariaDB installation was successful. ####################"
+else
+    echo "#################### MariaDB installation failed. ####################"
+fi
+
+# Set the MySQL root password to 'password'
+mysql_root_password="password"
+
+# Run MySQL secure installation with the predefined password
+echo "#################### Configuring MariaDB... ####################"
+if sudo mysql -e "ALTER USER 'root'@'localhost' IDENTIFIED BY '$mysql_root_password';"; then
+    echo "#################### MariaDB configuration was successful. ####################"
+else
+    echo "#################### MariaDB configuration failed. ####################"
+fi
+
+# Install OpenJDK 17 without user prompts
+echo "#################### Installing OpenJDK 17... ####################"
+sudo apt-get install -y openjdk-17-jdk
+echo "#################### OpenJDK 17 installation was successful. ####################"
+
+# Install OpenJDK 17 JRE without user prompts
+echo "#################### Installing OpenJDK 17 JRE... ####################"
+sudo apt-get install -y openjdk-17-jre
+echo "#################### OpenJDK 17 JRE installation was successful. ####################"
+
+
+echo "#################### setup complete! ####################"
