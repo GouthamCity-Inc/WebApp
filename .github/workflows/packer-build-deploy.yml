@@ -4,11 +4,12 @@ on:
   pull_request:
 
 jobs:
-  integration-test:
+  packer:
     runs-on: ubuntu-latest
-
+    name: Packer build and generate AMI
     steps:
-      - uses: actions/checkout@v3
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Set up JDK 17
         uses: actions/setup-java@v3

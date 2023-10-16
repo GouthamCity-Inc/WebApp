@@ -7,4 +7,4 @@ Feature: Integration test to verify the functionality of the health endpoint
   Scenario: Health endpoint returns 200
 
     When method GET
-    Then status 400
+    Then status 200
