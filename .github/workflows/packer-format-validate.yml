@@ -19,6 +19,8 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build -xTest
 
+
+
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
 
@@ -27,8 +29,8 @@ jobs:
         run: "packer init ./WebappAMI.pkr.hcl"
 
       - name: Run `packer format`
-        run: "packer fmt ./WebappAMI.pkr.hcl"
+        run: "packer fmt -check ./WebappAMI.pkr.hcl"
 
       - name: Run `packer validate`
         id: validate
-        run: "packer validate ./WebappAMI.pkr.hcl"
+        run: "packer validate -check ./WebappAMI.pkr.hcl -check"

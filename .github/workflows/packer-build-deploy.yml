@@ -2,6 +2,9 @@ name: Build and generate AMI
 
 on:
   pull_request:
+    types:
+      - closed
+
 
 jobs:
   packer:
