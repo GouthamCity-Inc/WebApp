@@ -47,5 +47,8 @@ jobs:
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
 
+      - name: Run `packer init`
+        run: "packer init ./WebappAMI.pkr.hcl"
+
       - name: Run `packer build`
         run: "packer build WebappAMI.pkr.hcl"
