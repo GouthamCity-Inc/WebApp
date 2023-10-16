@@ -31,4 +31,4 @@ jobs:
 
       - name: Run `packer validate`
         id: validate
-        run: "packer validate -check ./WebappAMI.pkr.hcl -check"
+        run: "packer validate -check ./WebappAMI.pkr.hcl"
