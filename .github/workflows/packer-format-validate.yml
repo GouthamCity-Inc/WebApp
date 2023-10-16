@@ -19,8 +19,6 @@ jobs:
       - name: Build with Gradle
         run: ./gradlew clean build -xTest
 
-
-
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
 
