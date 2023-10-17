@@ -1,16 +1,16 @@
-name: Build WebApp and execute Karate tests
+name: run-karate-test
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 permissions:
   contents: read
 
 jobs:
-  integration-test:
+  run-integration-test:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Set up JDK 17
@@ -28,9 +28,9 @@ jobs:
         mysql root password: 'password' # Required if "mysql user" is empty, default is empty. The root superuser password
         mysql user: 'user' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
         mysql password: 'password'
-    - name: Check Java version 
+    - name: check java version
       run: java -version && pwd && ls -al
-    - name: Run Karate test
+    - name: Run karate test
       run: gradle test
       env:
         ACTIONS_RUNNER_DEBUG: ${{ secrets.ACTIONS_RUNNER_DEBUG }}
