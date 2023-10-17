@@ -12,8 +12,11 @@ sudo apt-get upgrade -y
 echo "#################### Package repositories upgraded. ####################"
 
 echo "#################### Setting up env variables ####################"
-export DB_USER=$DB_USER
-export DB_PASSWORD=$DB_PASSWORD
+echo $DB_USER
+echo $DB_PASSWORD
+echo export DB_USER=$DB_USER >> ~/.bashrc
+echo export DB_PASSWORD=$DB_PASSWORD >> ~/.bashrc
+source ~/.bashrc
 
 
 echo "#################### Moving webapp and users.csv from /tmp to /opt... ####################"
