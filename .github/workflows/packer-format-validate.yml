@@ -36,6 +36,8 @@ jobs:
         run: ./gradlew test
         env:
           ACTIONS_RUNNER_DEBUG: ${{ secrets.ACTIONS_RUNNER_DEBUG }}
+          DB_USER: ${{ secrets.DB_USER }}
+          DB_PASSWORD: ${{ secrets.DB_USER_PASSWORD }}
 
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
