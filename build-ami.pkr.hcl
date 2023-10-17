@@ -32,6 +32,16 @@ variable aws_profile {
   default = "default"
 }
 
+variable db_user {
+  type    = string
+  default = "root"
+}
+
+variable db_password {
+  type    = string
+  default = "password"
+}
+
 locals {
   timestamp       = regex_replace(timestamp(), "[- TZ:]", "")
   demo_account_id = "081235755261"
@@ -85,7 +95,9 @@ build {
   provisioner "shell" {
     environment_vars = [
       "DEBIAN_FRONTEND=noninteractive",
-      "CHECKPOINT_DISABLE=1"
+      "CHECKPOINT_DISABLE=1",
+      "DB_USER=${var.db_user}",
+      "DB_PASSWORD=${var.db_password}",
     ]
     script = "./scripts/setup.sh"
   }
