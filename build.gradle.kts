@@ -6,6 +6,7 @@ plugins {
 	kotlin("jvm") version "1.8.22"
 	kotlin("plugin.spring") version "1.8.22"
 	kotlin("plugin.jpa") version "1.8.22"
+	id("com.github.johnrengelman.shadow") version "7.1.1"
 }
 
 group = "edu.northeastern"
