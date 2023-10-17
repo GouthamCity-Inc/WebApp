@@ -1,0 +1,52 @@
+name: packer-format-validate
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  packer:
+    runs-on: ubuntu-latest
+    name: packer-format-validate
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build with Gradle
+        run: ./gradlew clean build -xTest
+
+      - name: Install mariadb
+        uses: getong/mariadb-action@v1.1
+        with:
+          host port: 3306
+          container port: 3306
+          mariadb version: '10.4.10'
+          mysql database: 'db'
+          mysql root password: ${{ secrets.DB_ROOT_PASSWORD }}
+          mysql user: ${{ secrets.DB_USER }}
+          mysql password: ${{ secrets.DB_USER_PASSWORD }}
+
+      - name: Run karate test
+        run: ./gradlew test
+        env:
+          ACTIONS_RUNNER_DEBUG: ${{ secrets.ACTIONS_RUNNER_DEBUG }}
+
+      - name: Setup `packer`
+        uses: hashicorp/setup-packer@main
+
+      - name: Run `packer init`
+        id: init
+        run: "packer init ./build-ami.pkr.hcl"
+
+      - name: Run `packer format`
+        run: "packer fmt -check ./build-ami.pkr.hcl"
+
+      - name: Run `packer validate`
+        id: validate
+        run: "packer validate ./build-ami.pkr.hcl"
