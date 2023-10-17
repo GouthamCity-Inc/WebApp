@@ -34,12 +34,12 @@ variable aws_profile {
 
 variable db_user {
   type    = string
-  default = "root"
+  default = ""
 }
 
 variable db_password {
   type    = string
-  default = "password"
+  default = ""
 }
 
 locals {
