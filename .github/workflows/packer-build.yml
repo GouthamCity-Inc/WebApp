@@ -55,7 +55,7 @@ jobs:
         run: packer init ./build-ami.pkr.hcl
 
       - name: Run `packer build`
-        run: packer build --var db_user=$DB_USER --var db_password=$DB_PASSWORD build-ami.pkr.hcl
+        run: packer build -var 'db_user=$DB_USER' -var 'db_password=$DB_PASSWORD' build-ami.pkr.hcl
         env:
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_USER_PASSWORD }}
