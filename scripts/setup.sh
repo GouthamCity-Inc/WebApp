@@ -12,8 +12,6 @@ sudo apt-get upgrade -y
 echo "#################### Package repositories upgraded. ####################"
 
 echo "#################### Setting up env variables ####################"
-echo $DB_USER
-echo $DB_PASSWORD
 echo export DB_USER="$DB_USER">> /home/admin/.bashrc
 echo export DB_PASSWORD="$DB_PASSWORD" >> /home/admin/.bashrc
 source /home/admin/.bashrc
