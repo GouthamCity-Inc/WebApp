@@ -11,6 +11,11 @@ echo "#################### Upgrading package repositories... ###################
 sudo apt-get upgrade -y
 echo "#################### Package repositories upgraded. ####################"
 
+echo "#################### Setting up env variables ####################"
+export DB_USER=$DB_USER
+export DB_PASSWORD=$DB_PASSWORD
+
+
 echo "#################### Moving webapp and users.csv from /tmp to /opt... ####################"
 sudo mv /tmp/gatewayapplication-0.0.1-SNAPSHOT.jar /opt/gatewayapplication-0.0.1-SNAPSHOT.jar
 sudo mv /tmp/users.csv /opt/users.csv
