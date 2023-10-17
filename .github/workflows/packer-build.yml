@@ -6,7 +6,6 @@ on:
       - main
     types:
       - closed
-      -
 jobs:
   packer:
     runs-on: ubuntu-latest
