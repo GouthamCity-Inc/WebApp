@@ -10,7 +10,6 @@ on:
 jobs:
   packer:
     runs-on: ubuntu-latest
-    name: packer-build
     steps:
       - name: Checkout
         uses: actions/checkout@v3
