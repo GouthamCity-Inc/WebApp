@@ -7,40 +7,17 @@ packer {
   }
 }
 
-variable "aws_region" {
-  type    = string
-  default = "us-east-1"
-}
-
-variable "ami_prefix" {
-  type    = string
-  default = "csye-6225"
-}
-
-variable ssh_username {
-  type    = string
-  default = "admin"
-}
-
-variable subnet_id {
-  type    = string
-  default = "subnet-03f886341a73639f9"
-}
-
-variable aws_profile {
-  type    = string
-  default = "default"
-}
-
-variable db_user {
-  type    = string
-  default = ""
-}
-
-variable db_password {
-  type    = string
-  default = ""
-}
+variable aws_region {}
+variable ami_prefix {}
+variable ssh_username {}
+variable subnet_id {}
+variable aws_profile {}
+variable db_user {}
+variable db_password {}
+variable instance_type {}
+variable ebs_device_name {}
+variable ebs_volume_size {}
+variable ebs_volume_type {}
 
 locals {
   timestamp       = regex_replace(timestamp(), "[- TZ:]", "")
@@ -56,7 +33,7 @@ source "amazon-ebs" "debian_ami" {
   ]
   ami_users = ["${local.demo_account_id}"]
 
-  instance_type = "t2.micro"
+  instance_type = "${var.instance_type}"
   profile       = "${var.aws_profile}" # remove this before pushing to repo
   region        = "${var.aws_region}"
   subnet_id     = "${var.subnet_id}"
@@ -72,10 +49,10 @@ source "amazon-ebs" "debian_ami" {
   ssh_username = "${var.ssh_username}"
 
   launch_block_device_mappings {
-    device_name           = "/dev/xvda"
+    device_name           = "${var.ebs_device_name}"
     delete_on_termination = true
-    volume_size           = 25
-    volume_type           = "gp2"
+    volume_size           = "${var.ebs_volume_size}"
+    volume_type           = "${var.ebs_volume_type}"
   }
 }
 
@@ -100,10 +77,5 @@ build {
       "DB_PASSWORD=${var.db_password}",
     ]
     script = "./scripts/setup.sh"
-  }
-
-  post-processor "manifest" {
-    output     = "manifest.json"
-    strip_path = true
   }
 }

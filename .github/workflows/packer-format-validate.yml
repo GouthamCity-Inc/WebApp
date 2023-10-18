@@ -51,4 +51,4 @@ jobs:
 
       - name: Run `packer validate`
         id: validate
-        run: "packer validate ./build-ami.pkr.hcl"
+        run: "packer validate -var-file=./build-ami.pkrvars.hcl ./build-ami.pkr.hcl"
