@@ -29,7 +29,7 @@ source "amazon-ebs" "debian_ami" {
   ami_name        = "${var.ami_prefix}-${local.timestamp}"
   ami_description = "image for running CSYE 6225 webapp built at ${local.timestamp}"
   ami_regions = [
-    "us-east-1",
+    "${var.aws_region}",
   ]
   ami_users = ["${local.demo_account_id}"]
 
