@@ -22,7 +22,10 @@ class AssignmentController(
     private val utils = Utils()
 
     @GetMapping(produces = ["application/json"])
-    fun getAssignments(authentication: Authentication, @RequestBody(required = false) requestBody: String?, httpRequest: HttpServletRequest): ResponseEntity<List<Assignment>> {
+    fun getAssignments(authentication: Authentication?, @RequestBody(required = false) requestBody: String?, httpRequest: HttpServletRequest): ResponseEntity<List<Assignment>> {
+        if (authentication == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
         logger.info { "Getting assignments for user ${authentication.name}" }
         if (utils.requestContainBodyOrParams(requestBody, httpRequest))
             return ResponseEntity.badRequest().build()
@@ -31,7 +34,10 @@ class AssignmentController(
     }
 
     @GetMapping("/{id}", produces = ["application/json"])
-    fun getAssignment(authentication: Authentication, @PathVariable id: UUID): ResponseEntity<Assignment> {
+    fun getAssignment(authentication: Authentication?, @PathVariable id: UUID): ResponseEntity<Assignment> {
+        if (authentication == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
         logger.info { "Getting assignment for user ${authentication.name}" }
         val assignment = assignmentService.get(id)
         if (assignment.isEmpty) {
@@ -41,7 +47,10 @@ class AssignmentController(
     }
 
     @PutMapping("/{id}", produces = ["application/json"], consumes = ["application/json"])
-    fun updateAssignment(authentication: Authentication, @PathVariable id: UUID, @RequestBody assignment: Assignment): ResponseEntity<Assignment> {
+    fun updateAssignment(authentication: Authentication?, @PathVariable id: UUID, @RequestBody assignment: Assignment): ResponseEntity<Assignment> {
+        if (authentication == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
         logger.info { "Updating assignment for user ${authentication.name}" }
 
         if (utils.areMandatoryFieldsPresent(assignment).not() ||
@@ -90,7 +99,10 @@ class AssignmentController(
 
 
     @PostMapping(produces = ["application/json"], consumes = ["application/json"])
-    fun createAssignment(authentication: Authentication, @RequestBody assignment: Assignment): ResponseEntity<Assignment> {
+    fun createAssignment(authentication: Authentication?, @RequestBody assignment: Assignment): ResponseEntity<Assignment> {
+        if (authentication == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
         logger.info { "Creating assignment for user ${authentication.name}" }
         // 400 if points are not in range or mandatory fields are not present
         if (utils.areMandatoryFieldsPresent(assignment).not() ||
@@ -115,7 +127,10 @@ class AssignmentController(
     }
 
     @DeleteMapping("/{id}", produces = ["application/json"])
-    fun deleteAssignment(authentication: Authentication, @PathVariable id: UUID): ResponseEntity<Assignment> {
+    fun deleteAssignment(authentication: Authentication?, @PathVariable id: UUID): ResponseEntity<Assignment> {
+        if (authentication == null)
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
+
         logger.info { "Deleting assignment for user ${authentication.name}" }
         val assignment = assignmentService.get(id)
         if (assignment.isEmpty) {
