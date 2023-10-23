@@ -33,9 +33,9 @@ source "amazon-ebs" "debian_ami" {
   ]
   ami_users = ["${local.demo_account_id}"]
 
-  instance_type =          "${var.instance_type}"
-  profile       =           "${var.aws_profile}" # remove this before pushing to repo
-  region        =          "${var.aws_region}"
+  instance_type = "${var.instance_type}"
+  profile       = "${var.aws_profile}" # remove this before pushing to repo
+  region        = "${var.aws_region}"
   subnet_id     = "${var.subnet_id}"
   source_ami_filter {
     filters = {

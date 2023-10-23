@@ -15,7 +15,7 @@ The following are required in order to provide a successful runtime for the appl
 
   
 
-## Configurations
+## Configs
   
 
 1. Clone the repo into your local file system
