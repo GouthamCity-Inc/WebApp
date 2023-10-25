@@ -55,4 +55,4 @@ jobs:
         run: packer init ./build-ami.pkr.hcl
 
       - name: Run `packer build`
-        run: packer build -var-file=./build-ami.pkrvars.hcl -var 'db_user=${{ secrets.DB_USER }}' -var 'db_password=${{ secrets.DB_USER_PASSWORD }}' build-ami.pkr.hcl
+        run: packer build -var-file=./build-ami.pkrvars.hcl  build-ami.pkr.hcl

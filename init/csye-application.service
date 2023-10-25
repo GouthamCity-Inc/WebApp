@@ -1,0 +1,19 @@
+[Unit]
+Description= gateway application
+ConditionPathExists=/opt/csye6225/gatewayapplication-0.0.1-SNAPSHOT.jar
+Requires=cloud-init.service
+After=cloud-final.service
+
+[Service]
+Type=simple
+User=csye6225
+Group=csye6225
+WorkingDirectory=/opt/csye6225
+ExecStart=/bin/java -jar /opt/csye6225/gatewayapplication-0.0.1-SNAPSHOT.jar --spring.config.name=application --spring.config.location=file:/opt/csye6225/application.properties
+Restart=always
+RestartSec=5s
+TimeoutSec=10s
+
+
+[Install]
+WantedBy=cloud-init.target
