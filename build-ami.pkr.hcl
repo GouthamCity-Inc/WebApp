@@ -12,8 +12,6 @@ variable ami_prefix {}
 variable ssh_username {}
 variable subnet_id {}
 variable aws_profile {}
-variable db_user {}
-variable db_password {}
 variable instance_type {}
 variable ebs_device_name {}
 variable ebs_volume_size {}
@@ -64,7 +62,8 @@ build {
   provisioner "file" {
     sources = [
       "./build/libs/gatewayapplication-0.0.1-SNAPSHOT.jar",
-      "./users.csv"
+      "./users.csv",
+      "./init/csye-application.service"
     ]
     destination = "/tmp/"
   }
@@ -73,8 +72,6 @@ build {
     environment_vars = [
       "DEBIAN_FRONTEND=noninteractive",
       "CHECKPOINT_DISABLE=1",
-      "DB_USER=${var.db_user}",
-      "DB_PASSWORD=${var.db_password}",
     ]
     script = "./scripts/setup.sh"
   }
