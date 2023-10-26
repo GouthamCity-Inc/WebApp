@@ -20,6 +20,11 @@ echo "#################### Setting up csye6225 group and permissions ###########
 sudo groupadd csye6225
 sudo useradd -s /bin/false -g csye6225 -d /opt/csye6225 -m csye6225
 
+echo "#################### setting up logging ####################"
+sudo mkdir /var/log/csye6225
+sudo touch /var/log/csye6225/application.log
+sudo chown csye6225:csye6225 /var/log/csye6225/application.log
+
 
 echo "#################### Moving webapp, users.csv and service file from /tmp to /opt and /etc... ####################"
 sudo mv /tmp/gatewayapplication-0.0.1-SNAPSHOT.jar /opt/csye6225/gatewayapplication-0.0.1-SNAPSHOT.jar
