@@ -63,7 +63,8 @@ build {
     sources = [
       "./build/libs/gatewayapplication-0.0.1-SNAPSHOT.jar",
       "./users.csv",
-      "./init/csye-application.service"
+      "./init/csye-application.service",
+      "./cloudwatch-config.json"
     ]
     destination = "/tmp/"
   }

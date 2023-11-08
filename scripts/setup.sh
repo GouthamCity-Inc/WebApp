@@ -33,6 +33,13 @@ sudo mv /tmp/csye-application.service /etc/systemd/system/
 echo "#################### Successfully moved webapp and init file... ####################"
 
 
+echo "#################### Installing CloudWatch Agent ####################"
+sudo wget https://amazoncloudwatch-agent.s3.amazonaws.com/debian/amd64/latest/amazon-cloudwatch-agent.deb
+sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
+sudo systemctl enable amazon-cloudwatch-agent
+sudo mv /tmp/cloudwatch-config.json /opt/aws/amazon-cloudwatch-agent/etc/cloudwatch-config.json
+
+
 echo "#################### Changing permissons for app binary and users.csv ####################"
 sudo chown csye6225:csye6225 /opt/csye6225/gatewayapplication-0.0.1-SNAPSHOT.jar
 sudo chown csye6225:csye6225 /opt/csye6225/users.csv
