@@ -1,9 +1,9 @@
 package edu.northeastern.gatewayapplication.controller
 
+import com.timgroup.statsd.NonBlockingStatsDClient
 import edu.northeastern.gatewayapplication.utils.Utils
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
-import org.apache.coyote.Response
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.GetMapping
@@ -26,6 +26,7 @@ class HealthController(val dataSource: DataSource) {
 
     private val logger = KotlinLogging.logger {}
     private val utils = Utils()
+    private val metricsReporter = NonBlockingStatsDClient("webapp", "localhost", 8125)
 
     /**
      * pings the DB to figure out the state of the application
@@ -35,7 +36,7 @@ class HealthController(val dataSource: DataSource) {
     @GetMapping(produces = ["application/json"])
     fun health(@RequestBody(required = false) requestBody: String?, request: HttpServletRequest): ResponseEntity<String> {
         logger.info { "Hitting the /healthz endpoint" }
-
+        metricsReporter.increment("health.get")
         val response: ResponseEntity<String> = try {
             if (utils.requestContainBodyOrParams(requestBody, request))
                 return ResponseEntity.badRequest().build()

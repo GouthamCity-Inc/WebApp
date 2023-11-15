@@ -1,9 +1,11 @@
 package edu.northeastern.gatewayapplication.controller
 
+import com.timgroup.statsd.NonBlockingStatsDClient
 import edu.northeastern.gatewayapplication.pojo.Assignment
 import edu.northeastern.gatewayapplication.service.AccountService
 import edu.northeastern.gatewayapplication.service.AssignmentService
 import edu.northeastern.gatewayapplication.utils.Utils
+import io.micrometer.core.instrument.Metrics
 import jakarta.servlet.http.HttpServletRequest
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 private val logger = mu.KotlinLogging.logger {}
+private val metricsReporter = NonBlockingStatsDClient("webapp", "localhost", 8125)
 
 @RestController
 @RequestMapping("/v1/assignments")
@@ -23,6 +26,7 @@ class AssignmentController(
 
     @GetMapping(produces = ["application/json"])
     fun getAssignments(authentication: Authentication?, @RequestBody(required = false) requestBody: String?, httpRequest: HttpServletRequest): ResponseEntity<List<Assignment>> {
+        metricsReporter.increment("assignment.get")
         if (authentication == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
@@ -35,6 +39,7 @@ class AssignmentController(
 
     @GetMapping("/{id}", produces = ["application/json"])
     fun getAssignment(authentication: Authentication?, @PathVariable id: UUID): ResponseEntity<Assignment> {
+        metricsReporter.increment("assignment.get.$id")
         if (authentication == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
@@ -48,6 +53,7 @@ class AssignmentController(
 
     @PutMapping("/{id}", produces = ["application/json"], consumes = ["application/json"])
     fun updateAssignment(authentication: Authentication?, @PathVariable id: UUID, @RequestBody assignment: Assignment): ResponseEntity<Assignment> {
+        metricsReporter.increment("assignment.put")
         if (authentication == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
@@ -100,6 +106,7 @@ class AssignmentController(
 
     @PostMapping(produces = ["application/json"], consumes = ["application/json"])
     fun createAssignment(authentication: Authentication?, @RequestBody assignment: Assignment): ResponseEntity<Assignment> {
+        metricsReporter.increment("assignment.post")
         if (authentication == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
@@ -128,6 +135,7 @@ class AssignmentController(
 
     @DeleteMapping("/{id}", produces = ["application/json"])
     fun deleteAssignment(authentication: Authentication?, @PathVariable id: UUID): ResponseEntity<Assignment> {
+        metricsReporter.increment("assignment.get")
         if (authentication == null)
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build()
 
@@ -141,7 +149,6 @@ class AssignmentController(
         if (requestUser.get().id != assignment.get().user?.id) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN).build()
         }
-
         assignmentService.delete(id)
         return ResponseEntity.noContent().build()
     }
