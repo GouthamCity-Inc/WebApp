@@ -45,7 +45,8 @@ dependencies {
 	testImplementation("com.intuit.karate:karate-junit5:1.4.0")
 	implementation("org.mariadb.jdbc:mariadb-java-client:3.2.0")
 	implementation("com.timgroup:java-statsd-client:3.1.0")
-
+	implementation("io.micrometer:micrometer-registry-statsd")
+	implementation("com.timgroup:java-statsd-client:3.1.0")
 }
 
 tasks.withType<KotlinCompile> {
