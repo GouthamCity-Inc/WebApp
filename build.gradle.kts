@@ -39,7 +39,8 @@ dependencies {
 	testImplementation("org.springframework.security:spring-security-test")
 
 	// my custom libraries
-	implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.9.2")
+//	implementation("com.github.doyaaaaaken:kotlin-csv-jvm:1.9.2")
+	implementation("com.opencsv:opencsv:5.8")
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 	implementation("com.intuit.karate:karate-core:1.4.0")
 	testImplementation("com.intuit.karate:karate-junit5:1.4.0")
@@ -47,6 +48,7 @@ dependencies {
 	implementation("com.timgroup:java-statsd-client:3.1.0")
 	implementation("io.micrometer:micrometer-registry-statsd")
 	implementation("com.timgroup:java-statsd-client:3.1.0")
+//	implementation("com.amazonaws:aws-java-sdk-sns:1.12.592")
 }
 
 tasks.withType<KotlinCompile> {
