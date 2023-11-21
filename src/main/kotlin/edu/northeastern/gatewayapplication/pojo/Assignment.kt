@@ -41,12 +41,18 @@ data class Assignment(
 
     @JsonIgnore
     @ManyToOne
-    var user: Account? = null
+    var user: Account? = null,
+
+    @JsonIgnore
+    @OneToMany
+    var submissions: MutableList<Submission>
 ){
-    constructor(): this(null, null, null, 0, null, null, null)
+    constructor(): this(null, null, null, 0, null, null, null, submissions = mutableListOf())
 
     @Override
     override fun toString(): String {
-        return "Assignment(id=$id, name='$name', points=$points, attempts=$attempts, deadline=$deadline, created=$created, updated=$updated, user=$user)"
+        return "Assignment(id=$id, name='$name', points=$points, attempts=$attempts, " +
+                "deadline=$deadline, created=$created, updated=$updated, user=$user)" +
+                "submissions=$submissions"
     }
 }

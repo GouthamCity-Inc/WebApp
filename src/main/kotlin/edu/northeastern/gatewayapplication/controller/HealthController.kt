@@ -1,7 +1,7 @@
 package edu.northeastern.gatewayapplication.controller
 
 import com.timgroup.statsd.NonBlockingStatsDClient
-import edu.northeastern.gatewayapplication.utils.Utils
+import edu.northeastern.gatewayapplication.utils.GenericUtils
 import jakarta.servlet.http.HttpServletRequest
 import mu.KotlinLogging
 import org.springframework.http.HttpStatus
@@ -25,7 +25,7 @@ import javax.sql.DataSource
 class HealthController(val dataSource: DataSource) {
 
     private val logger = KotlinLogging.logger {}
-    private val utils = Utils()
+    private val utils = GenericUtils()
     private val metricsReporter = NonBlockingStatsDClient("webapp", "localhost", 8125)
 
     /**
