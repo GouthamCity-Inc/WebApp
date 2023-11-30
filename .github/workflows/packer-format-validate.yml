@@ -38,6 +38,7 @@ jobs:
           ACTIONS_RUNNER_DEBUG: ${{ secrets.ACTIONS_RUNNER_DEBUG }}
           DB_USER: ${{ secrets.DB_USER }}
           DB_PASSWORD: ${{ secrets.DB_USER_PASSWORD }}
+          AWS_REGION: {"us-east-1"}
 
       - name: Setup `packer`
         uses: hashicorp/setup-packer@main
