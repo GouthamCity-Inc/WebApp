@@ -1,13 +1,23 @@
 package edu.northeastern.gatewayapplication.controller
 
+import com.amazonaws.services.sns.model.AmazonSNSException
 import com.timgroup.statsd.NonBlockingStatsDClient
+import edu.northeastern.gatewayapplication.exception.BeyondDeadlineException
+import edu.northeastern.gatewayapplication.exception.InvalidURLException
+import edu.northeastern.gatewayapplication.exception.MaxAttemptsExceededException
 import edu.northeastern.gatewayapplication.pojo.Assignment
+import edu.northeastern.gatewayapplication.pojo.SNSMessage
 import edu.northeastern.gatewayapplication.pojo.Submission
 import edu.northeastern.gatewayapplication.service.AccountService
 import edu.northeastern.gatewayapplication.service.AssignmentService
 import edu.northeastern.gatewayapplication.service.SubmissionService
+import edu.northeastern.gatewayapplication.utils.AmazonSNSUtils
 import edu.northeastern.gatewayapplication.utils.GenericUtils
 import jakarta.servlet.http.HttpServletRequest
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.beans.factory.annotation.Value
+import org.springframework.context.annotation.PropertySource
+import org.springframework.core.env.Environment
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.core.Authentication
@@ -21,13 +31,17 @@ private val metricsReporter = NonBlockingStatsDClient("webapp", "localhost", 812
 
 @RestController
 @RequestMapping("/v1/assignments")
+@PropertySource("classpath:application.properties")
 class AssignmentController(
     private val accountService: AccountService,
     private val assignmentService: AssignmentService,
-    private val submissionService: SubmissionService
+    private val submissionService: SubmissionService,
+    @Value("\${application.config.topic-arn}")
+    private val topicArn: String,
 ) {
 
     private val utils = GenericUtils()
+    private val snsUtils = AmazonSNSUtils()
 
     @GetMapping(produces = ["application/json"])
     fun getAssignments(authentication: Authentication?, @RequestBody(required = false) requestBody: String?, httpRequest: HttpServletRequest): ResponseEntity<List<Assignment>> {
@@ -139,78 +153,124 @@ class AssignmentController(
     }
 
     @PostMapping("/{id}/submission", produces = ["application/json"], consumes = ["application/json"])
-    suspend fun createSubmission(authentication: Authentication?, @PathVariable id: UUID, @RequestBody submission: Submission): ResponseEntity<*> {
+    fun createSubmission(authentication: Authentication?, @PathVariable id: UUID, @RequestBody submission: Submission): ResponseEntity<*> {
+        logger.info { "Hitting /submission endpoint" }
         metricsReporter.increment("assignment.submissions.post")
-        val response: ResponseEntity.BodyBuilder
+        var response: ResponseEntity.BodyBuilder
+        var status = "SUCCESS"
+        var message: String
+        var assignmentID = ""
+        var submissionID = ""
+        var attempt: Int = 1
 
         if (authentication == null){
+            logger.info { "/submission - access credentials not provided" }
             response = ResponseEntity.status(HttpStatus.UNAUTHORIZED)
             return response.body(utils.generateErrorSchema("access credentials not provided", 401))
         }
 
+        try{
+            if (utils.isURLPresentInSubmission(submission).not()){
+                logger.info { "/submission - bad request : submission_url not present" }
+                response = ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                return response.body(utils.generateErrorSchema("mandatory field: submission URL is not present", 400))
+            }
 
-        if (utils.isURLPresentInSubmission(submission).not()){
-            response = ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            return response.body(utils.generateErrorSchema("mandatory field: submission_url is not present", 400))
+            val url = URL(submission.url)
+            val contentType = url.openConnection().contentType
+            val contentLength = url.openConnection().contentLength
+            if (contentType != "application/zip" || contentLength == 0){
+                logger.info { "/submission - bad request : submission URL does not return downloadable ZIP or ZIP is empty" }
+                status = "FAILURE"
+                throw InvalidURLException("Submission URL does not return downloadable ZIP or ZIP is empty")
+            }
+
+            // if assignment doesn't exist, return 404
+            val assignmentOptional = assignmentService.get(id)
+            if (assignmentOptional.isEmpty) {
+                logger.info { "/submission - bad request : assignment with ID: $id not found" }
+                response = ResponseEntity.status(HttpStatus.NOT_FOUND)
+                return response.body(utils.generateErrorSchema("assignment with ID: $id not found", 404))
+            }
+
+            val assignment = assignmentOptional.get()
+            assignmentID = assignment.id.toString()
+
+            if (!utils.isValidSubmission(assignment.deadline!!)){
+                logger.info { "/submission - bad request: assignment deadline has passed" }
+                throw BeyondDeadlineException("assignment deadline exceeded")
+            }
+
+            // if the size of submissions list is greater than the number of attempts, return 400
+            if (assignment.submissions.size >= assignment.attempts!!) {
+                logger.info { "/submission - bad request : maximum assignment submissions exceed for assignment ${assignment.id}" }
+                throw MaxAttemptsExceededException("")
+
+            }
+
+            submission.assignID = assignment.id
+            submission.submissionDate = utils.getCurrentTimeInISO8601()
+            submission.submissionUpdated = utils.getCurrentTimeInISO8601()
+            submissionService.save(submission)
+            submissionID = submission.id.toString()
+
+            assignment.submissions.add(submission)
+            assignmentService.save(assignment)
+            attempt = assignment.submissions.size
+
+            logger.info { "saved submission ${assignment.submissions.size} for assignment ${assignment.id}" }
+
+            val snsMessage = utils.serializeSNSMessage(
+                SNSMessage(
+                    assignmentID, submissionID, submission.url!!, authentication.name,
+                    status, "", assignment.submissions.size, submission.submissionDate!!
+                )
+            )
+            val topic = snsUtils.filterTopicByName(topicArn)
+            message = snsMessage
+            if (topic.isPresent) {
+                val publishRequest = snsUtils.getPublishRequest(topic.get().topicArn, snsMessage)
+                snsUtils.publishMessage(publishRequest)
+                logger.info { "successfully published message to SNS topic with ARN ${topic.get().topicArn}" }
+            }
+            return ResponseEntity.ok(submission)
+
+        } catch (e: Exception){
+            return when(e){
+                is InvalidURLException, is BeyondDeadlineException, is MaxAttemptsExceededException -> {
+                    message = if (e is InvalidURLException) "Invalid submission URL: not a ZIP or empty ZIP received"
+                            else if (e is BeyondDeadlineException) "Invalid submission: the deadline for the submission has passed"
+                            else "Invalid Submission: Maximum attempts exceeded"
+                    val snsMessage = utils.serializeSNSMessage(
+                        SNSMessage(
+                            assignmentID, submissionID, submission.url!!, authentication.name,
+                            "ERROR", message, attempt, utils.getCurrentDate()
+                        )
+                    )
+                    val topic = snsUtils.filterTopicByName(topicArn)
+                    if (topic.isPresent) {
+                        val publishRequest = snsUtils.getPublishRequest(topic.get().topicArn, snsMessage)
+                        snsUtils.publishMessage(publishRequest)
+                        logger.info { "successfully published message to SNS topic with ARN ${topic.get().topicArn}" }
+                    }
+                    if (e is InvalidURLException){
+                        response = ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                        response.body(utils.generateErrorSchema(message, 400))
+                    } else{
+                        response = ResponseEntity.status(HttpStatus.FORBIDDEN)
+                        response.body(utils.generateErrorSchema(message, 403))
+                    }
+                }
+                is AmazonSNSException -> {
+                    response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    response.body(utils.generateErrorSchema("exception occurred while publishing SNS message", 500))
+                }
+                else -> {
+                    response = ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    response.body(utils.generateErrorSchema("exception occurred during submission", 500))
+                }
+            }
         }
-
-        // check if the url contains a zip downloadable
-        val url = URL(submission.submissionURL)
-        val contentType = url.openConnection().contentType
-        if (contentType != "application/zip"){
-            response = ResponseEntity.status(HttpStatus.BAD_REQUEST)
-            return response.body(utils.generateErrorSchema("submission url does not return downloadable zip", 400))
-        }
-
-        // if assignment doesn't exist, return 404
-        val assignmentOptional = assignmentService.get(id)
-        if (assignmentOptional.isEmpty) {
-            response = ResponseEntity.status(HttpStatus.NOT_FOUND)
-            return response.body(utils.generateErrorSchema("assignment with ID: $id not found", 404))
-        }
-
-        // if user is not the owner of the assignment, return 403 unauthorized
-        val assignment = assignmentOptional.get()
-        if (assignment.user != null && assignment.user!!.email != authentication.name) {
-            response = ResponseEntity.status(HttpStatus.FORBIDDEN)
-            return response.body(utils.generateErrorSchema("${authentication.name} is not the owner of the assignment", 403))
-        }
-
-        // if the size of submissions list is greater than the number of attempts, return 400
-        if (assignment.submissions.size >= assignment.attempts!!) {
-            response = ResponseEntity.status(HttpStatus.BAD_REQUEST)
-           return response.body(utils.generateErrorSchema("exceeded maximum attempts of ${assignment.attempts}", 400))
-        }
-
-        submission.assignID = assignment.id
-        submission.submissionDate = utils.getCurrentTimeInISO8601()
-        submission.submissionUpdated = utils.getCurrentTimeInISO8601()
-        submissionService.save(submission)
-
-//
-//        SnsClient { region = "us-east-1" }.use { snsClient ->
-//            val snsResponse = snsClient.listTopics(ListTopicsRequest { })
-//            val topic = snsResponse.topics?.find { it.topicArn?.endsWith("csye-submissions.fifo") == true }!!
-//            val request = PublishRequest {
-//                message = "Hello!"
-//                topicArn = topic.topicArn
-//            }
-//            snsClient.publish(request)
-//        }
-//
-//        val snsClient = AmazonSNSClientBuilder.defaultClient()
-//        val topics = snsClient.listTopics().topics
-//
-//        val submissionTopic = topics.stream().filter {topic ->
-//            topic.topicArn.endsWith("csye-submissions.fifo")
-//        }.findFirst()
-//
-//        if (submissionTopic.isPresent){
-//            val publishRequest = PublishRequest(submissionTopic.get().topicArn, "Hello")
-//            snsClient.publish(publishRequest)
-//        }
-
-        return ResponseEntity.ok(submission)
     }
 
     @DeleteMapping("/{id}", produces = ["application/json"])
@@ -233,8 +293,4 @@ class AssignmentController(
         return ResponseEntity.noContent().build()
     }
 
-//    fun generateErrorEntityResponse(status: HttpStatus, message: String): ResponseEntity<*> {
-//        val errorSchema = utils.generateErrorSchema(message, status.value())
-//        return ResponseEntity.status(status).body(errorSchema)
-//    }
 }

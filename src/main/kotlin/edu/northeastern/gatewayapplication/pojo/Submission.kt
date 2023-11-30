@@ -22,7 +22,7 @@ data class Submission(
 
     @Column(name = "submission_url")
     @JsonProperty("submission_url")
-    val submissionURL: String? = null,
+    val url: String? = null,
 
     @Column(name = "submission_date")
     @JsonProperty("submission_date")
@@ -33,6 +33,6 @@ data class Submission(
     var submissionUpdated: String? = null,
 ){
     override fun toString(): String {
-        return "Submission(id=$id, assignID=$assignID, submissionURL=$submissionURL, submissionDate=$submissionDate, submissionUpdated=$submissionUpdated"
+        return "Submission(id=$id, assignID=$assignID, submissionURL=$url, submissionDate=$submissionDate, submissionUpdated=$submissionUpdated"
     }
 }
