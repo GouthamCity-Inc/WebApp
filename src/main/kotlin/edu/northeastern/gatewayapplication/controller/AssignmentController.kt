@@ -35,10 +35,7 @@ private val metricsReporter = NonBlockingStatsDClient("webapp", "localhost", 812
 class AssignmentController(
     private val accountService: AccountService,
     private val assignmentService: AssignmentService,
-    private val submissionService: SubmissionService,
-    @Value("\${application.config.topic-arn}")
-    private val topicArn: String,
-) {
+    private val submissionService: SubmissionService) {
 
     private val utils = GenericUtils()
     private val snsUtils = AmazonSNSUtils()
@@ -226,7 +223,7 @@ class AssignmentController(
                     status, "", assignment.submissions.size, submission.submissionDate!!
                 )
             )
-            val topic = snsUtils.filterTopicByName(topicArn)
+            val topic = snsUtils.filterTopicByName("csye6225-submissions")
             message = snsMessage
             if (topic.isPresent) {
                 val publishRequest = snsUtils.getPublishRequest(topic.get().topicArn, snsMessage)
@@ -247,7 +244,7 @@ class AssignmentController(
                             "ERROR", message, attempt, utils.getCurrentDate()
                         )
                     )
-                    val topic = snsUtils.filterTopicByName(topicArn)
+                    val topic = snsUtils.filterTopicByName("csye6225-submissions")
                     if (topic.isPresent) {
                         val publishRequest = snsUtils.getPublishRequest(topic.get().topicArn, snsMessage)
                         snsUtils.publishMessage(publishRequest)

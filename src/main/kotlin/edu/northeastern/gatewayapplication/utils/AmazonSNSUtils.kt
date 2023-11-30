@@ -14,7 +14,7 @@ class AmazonSNSUtils {
     fun filterTopicByName(arn: String): Optional<Topic>{
         val topics = client.listTopics().topics
         return topics.stream().filter {topic ->
-            topic.topicArn.equals(arn)
+            topic.topicArn.endsWith(arn)
         }.findFirst()
     }
 
