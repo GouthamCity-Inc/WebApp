@@ -48,7 +48,7 @@ dependencies {
 	implementation("com.timgroup:java-statsd-client:3.1.0")
 	implementation("io.micrometer:micrometer-registry-statsd")
 	implementation("com.timgroup:java-statsd-client:3.1.0")
-//	implementation("com.amazonaws:aws-java-sdk-sns:1.12.592")
+	implementation("com.amazonaws:aws-java-sdk-sns:1.12.592")
 }
 
 tasks.withType<KotlinCompile> {
