@@ -72,7 +72,7 @@ jobs:
       - name: extract latest AMI ID from the manifest
         id: extract
         run: |
-          AMI_ID=$(jq -r '.builds[-1].artifact_id | split(":")[1]' manifest.json)
+          AMI_ID=$(jq -r '.builds[-1].artifact_id | split(":")[1]' ./manifest.json)
           echo "ami-id is $ami_id"
       - name: create new launch template version
         run: |
