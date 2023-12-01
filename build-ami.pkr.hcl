@@ -76,4 +76,9 @@ build {
     ]
     script = "./scripts/setup.sh"
   }
+
+  post-processor "manifest" {
+    output     = "./manifest.json"
+    strip_path = true
+  }
 }

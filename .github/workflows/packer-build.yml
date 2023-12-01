@@ -57,3 +57,48 @@ jobs:
 
       - name: Run `packer build`
         run: packer build -var-file=./build-ami.pkrvars.hcl  build-ami.pkr.hcl
+
+  refresh-instances:
+    needs: packer
+    runs-on: ubuntu-latest
+    name: refresh instances with the latest AMI
+    steps:
+      - name: setup AWS demo account credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_DEMO_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_DEMO_SECRET }}
+          aws-region: us-east-1
+      - name: extract latest AMI ID from the manifest
+        id: extract
+        run: |
+          AMI_ID=$(jq -r '.builds[-1].artifact_id | split(":")[1]' manifest.json)
+          echo "ami-id is $ami_id"
+      - name: create new launch template version
+        run: |
+          aws ec2 create-launch-template-version \
+            --launch-template-name ${{ env.EC2_LAUNCH_TEMPLATE}} \
+            --launch-template-data ImageId=$AMI_ID
+            --source-version 1
+      - name: refresh instances
+        run: |
+          aws autoscaling start-instance-refresh \
+            --auto-scaling-group-name ${{ env.EC2_AUTOSCALING_GROUP }} \
+            --preferences MinHealthyPercentage=100,InstanceWarmup=300
+      - name: wait on instance refresh completion
+        run: |
+          asg_name="<your-auto-scaling-group-name>"
+          while true; do
+              refresh_status=$(aws autoscaling describe-instance-refreshes --auto-scaling-group-name ${{ env.EC2_AUTOSCALING_GROUP }} --query 'InstanceRefreshes[0].Status' --output text)
+          
+              if [ "$refresh_status" == "Successful" ]; then
+                  echo "Instance refresh completed successfully."
+                  break
+              elif [ "$refresh_status" == "Failed" ]; then
+                  echo "Instance refresh failed."
+                  exit 1
+              else
+                  echo "Instance refresh in progress..."
+                  sleep 30
+              fi
+          done

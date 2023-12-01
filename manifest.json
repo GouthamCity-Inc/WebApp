@@ -1,0 +1,23 @@
+{
+  "builds": [
+    {
+      "name": "debian_ami",
+      "builder_type": "amazon-ebs",
+      "build_time": 1701464917,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0b900ad624611dca3",
+      "packer_run_uuid": "ce630a10-e4b5-9cb6-eef9-e2d10c8e4dc0",
+      "custom_data": null
+    },
+    {
+      "name": "debian_ami",
+      "builder_type": "amazon-ebs",
+      "build_time": 1701465996,
+      "files": null,
+      "artifact_id": "us-east-1:ami-0f7e7ebc7a63f91e6",
+      "packer_run_uuid": "9f32a484-ebca-57b8-d13a-55af666bdd80",
+      "custom_data": null
+    }
+  ],
+  "last_run_uuid": "9f32a484-ebca-57b8-d13a-55af666bdd80"
+}
