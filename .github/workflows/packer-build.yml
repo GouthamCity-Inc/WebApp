@@ -75,11 +75,20 @@ jobs:
           --filters "Name=name,Values=csye-6225*" \
           --query "Images | sort_by(@, &CreationDate) | [-1].ImageId" \
           --output text)
+      - name: print env variables
+        run: |
+          echo "EC2_LAUNCH_TEMPLATE: $EC2_LAUNCH_TEMPLATE"
+          echo "EC2_AUTOSCALING_GROUP: $EC2_AUTOSCALING_GROUP"
+          echo "AMI_ID: $AMI_ID"
+        env:
+            EC2_LAUNCH_TEMPLATE: ${{ env.EC2_LAUNCH_TEMPLATE }}
+            EC2_AUTOSCALING_GROUP: ${{ env.EC2_AUTOSCALING_GROUP }}
+            AMI_ID: ${{ env.AMI_ID }}
       - name: create new launch template version
         run: |
           aws ec2 create-launch-template-version \
           --launch-template-name $EC2_LAUNCH_TEMPLATE \
-          --launch-template-data ImageId=$AMI_ID
+          --launch-template-data ImageId=$AMI_ID \
           --source-version 1
         env:
             EC2_LAUNCH_TEMPLATE: ${{ env.EC2_LAUNCH_TEMPLATE }}
@@ -87,7 +96,6 @@ jobs:
         run: |
           aws autoscaling start-instance-refresh \
           --auto-scaling-group-name $EC2_AUTOSCALING_GROUP \
-          --preferences MinHealthyPercentage=100,InstanceWarmup=300
         env:
             EC2_AUTOSCALING_GROUP: ${{ env.EC2_AUTOSCALING_GROUP }}
       - name: wait on instance refresh completion
