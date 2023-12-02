@@ -78,6 +78,7 @@ jobs:
           --filters "Name=name,Values=csye-6225*" \
           --query "Images | sort_by(@, &CreationDate) | [-1].ImageId" \
           --output text)
+          echo "AMI_ID=$AMI_ID" >> $GITHUB_ENV
       - name: print env variables
         run: |
           echo "EC2_LAUNCH_TEMPLATE: $EC2_LAUNCH_TEMPLATE"
