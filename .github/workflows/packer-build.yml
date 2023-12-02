@@ -62,6 +62,9 @@ jobs:
     needs: packer
     runs-on: ubuntu-latest
     name: refresh instances with the latest AMI
+    env:
+        EC2_LAUNCH_TEMPLATE: ${{ vars.EC2_LAUNCH_TEMPLATE }}
+        EC2_AUTOSCALING_GROUP: ${{ vars.EC2_AUTOSCALING_GROUP }}
     steps:
       - name: setup AWS demo account credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -80,24 +83,16 @@ jobs:
           echo "EC2_LAUNCH_TEMPLATE: $EC2_LAUNCH_TEMPLATE"
           echo "EC2_AUTOSCALING_GROUP: $EC2_AUTOSCALING_GROUP"
           echo "AMI_ID: $AMI_ID"
-        env:
-            EC2_LAUNCH_TEMPLATE: ${{ env.EC2_LAUNCH_TEMPLATE }}
-            EC2_AUTOSCALING_GROUP: ${{ env.EC2_AUTOSCALING_GROUP }}
-            AMI_ID: ${{ env.AMI_ID }}
       - name: create new launch template version
         run: |
           aws ec2 create-launch-template-version \
           --launch-template-name $EC2_LAUNCH_TEMPLATE \
           --launch-template-data ImageId=$AMI_ID \
           --source-version 1
-        env:
-            EC2_LAUNCH_TEMPLATE: ${{ env.EC2_LAUNCH_TEMPLATE }}
       - name: refresh instances
         run: |
           aws autoscaling start-instance-refresh \
           --auto-scaling-group-name $EC2_AUTOSCALING_GROUP \
-        env:
-            EC2_AUTOSCALING_GROUP: ${{ env.EC2_AUTOSCALING_GROUP }}
       - name: wait on instance refresh completion
         run: |
           asg_name="<your-auto-scaling-group-name>"
