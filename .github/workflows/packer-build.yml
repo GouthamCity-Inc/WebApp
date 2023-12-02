@@ -78,7 +78,7 @@ jobs:
       - name: create new launch template version
         run: |
           aws ec2 create-launch-template-version \
-            --launch-template-name ${{ env.EC2_LAUNCH_TEMPLATE}} \
+            --launch-template-name ${{ env.EC2_LAUNCH_TEMPLATE }} \
             --launch-template-data ImageId=$AMI_ID
             --source-version 1
       - name: refresh instances
