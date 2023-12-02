@@ -69,11 +69,12 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_DEMO_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_DEMO_SECRET }}
           aws-region: us-east-1
-      - name: extract latest AMI ID from the manifest
-        id: extract
+      - name: get the latest AMI id
         run: |
-          AMI_ID=$(jq -r '.builds[-1].artifact_id | split(":")[1]' ./manifest.json)
-          echo "ami-id is $ami_id"
+          AMI_ID=$(aws ec2 describe-images \
+          --filters "Name=name,Values=csye-6225*" \
+          --query "Images | sort_by(@, &CreationDate) | [-1].ImageId" \
+          --output text)
       - name: create new launch template version
         run: |
           aws ec2 create-launch-template-version \
