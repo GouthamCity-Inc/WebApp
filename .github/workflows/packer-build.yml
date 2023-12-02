@@ -78,14 +78,18 @@ jobs:
       - name: create new launch template version
         run: |
           aws ec2 create-launch-template-version \
-            --launch-template-name ${{ env.EC2_LAUNCH_TEMPLATE }} \
+            --launch-template-name $EC2_LAUNCH_TEMPLATE \
             --launch-template-data ImageId=$AMI_ID
             --source-version 1
+        env:
+            EC2_LAUNCH_TEMPLATE: ${{ env.EC2_LAUNCH_TEMPLATE }}
       - name: refresh instances
         run: |
           aws autoscaling start-instance-refresh \
-            --auto-scaling-group-name ${{ env.EC2_AUTOSCALING_GROUP }} \
+            --auto-scaling-group-name $EC2_AUTOSCALING_GROUP \
             --preferences MinHealthyPercentage=100,InstanceWarmup=300
+        env:
+            EC2_AUTOSCALING_GROUP: ${{ env.EC2_AUTOSCALING_GROUP }}
       - name: wait on instance refresh completion
         run: |
           asg_name="<your-auto-scaling-group-name>"
