@@ -113,6 +113,13 @@ gradle  test
 
 ```
 
+## Miscellaneous
+
+Import SSL certification to AWS ACM through the following command:
+```bash
+aws acm import-certificate --certificate file://<filepath> --private-key fileb://<filepath>
+```
+
  
 
 ## License
