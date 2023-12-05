@@ -30,7 +30,7 @@ private val logger = mu.KotlinLogging.logger {}
 private val metricsReporter = NonBlockingStatsDClient("webapp", "localhost", 8125)
 
 @RestController
-@RequestMapping("/v3/assignments")
+@RequestMapping("/v2/assignments")
 @PropertySource("classpath:application.properties")
 class AssignmentController(
     private val accountService: AccountService,
