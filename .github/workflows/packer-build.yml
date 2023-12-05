@@ -106,6 +106,9 @@ jobs:
               elif [ "$refresh_status" == "Failed" ]; then
                   echo "Instance refresh failed."
                   exit 1
+              elif [ "$refresh_status" == "Cancelled" ]; then
+                  echo "Instance refresh cancelled."
+                  exit 1
               else
                   echo "Instance refresh in progress..."
                   sleep 30
