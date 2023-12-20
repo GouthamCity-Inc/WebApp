@@ -1,0 +1,305 @@
+---
+openapi: 3.0.0
+info:
+  title: CSYE 6225 - Cloud Native Web Application
+  description: CSYE 6225 - Cloud Native Web Application
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  version: fall2023-a9
+servers:
+- url: https://virtserver.swaggerhub.com/csye6225-webapp/cloud-native-webapp/fall2023-a9
+  description: SwaggerHub API Auto Mocking
+- url: https://virtserver.swaggerhub.com/fall2022-csye6225/cloud-native-webapp/assignment-02
+  description: SwaggerHub API Auto Mocking
+- url: https://virtserver.swaggerhub.com/spring2022-csye6225/app/1.0.0
+  description: SwaggerHub API Auto Mocking
+tags:
+- name: authenticated
+  description: Operations available only to authenticated users
+- name: public
+  description: Operations available to all users without authentication
+paths:
+  /healthz:
+    get:
+      tags:
+      - public
+      summary: Health Check API
+      description: Health Check API - Checks if the application has connectivity to the database
+      operationId: healthEndpoint
+      responses:
+        "200":
+          description: server responds with 200 OK if it is healhty.
+        "500":
+          description: server responds with 503 Service Unavailable if it is unhealhty.
+  /v1/assignments:
+    get:
+      tags:
+      - authenticated
+      summary: Get List of All assignments
+      description: Get List of All assignments
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Assignment'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+    post:
+      tags:
+      - authenticated
+      summary: Create assignment
+      description: Create assignment
+      operationId: Create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Assignment'
+        required: true
+        x-name: request
+        x-position: 1
+      responses:
+        "201":
+          description: Assignment Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Assignment'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+  /v1/assignments/{id}:
+    get:
+      tags:
+      - authenticated
+      summary: Get assignment details
+      description: Get assignment details
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Assignment'
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+    put:
+      tags:
+      - authenticated
+      summary: Update Assignment
+      description: Update Assignment
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        description: Update Assignment
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Assignment'
+        required: true
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+    delete:
+      tags:
+      - authenticated
+      summary: Delete the Assignment
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+        example: d290f1ee-6c54-4b01-90e6-d701748f0851
+      responses:
+        "204":
+          description: No Content
+        "401":
+          description: Unauthorized
+        "404":
+          description: Not Found
+  /v1/assignments/{id}/submission:
+    post:
+      tags:
+      - authenticated
+      summary: Submit Assignment
+      description: Submit Assignment
+      operationId: assignment_submission
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Submission'
+        required: true
+        x-name: request
+        x-position: 1
+      responses:
+        "201":
+          description: Submission Accepted
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Submission'
+        "400":
+          description: Bad Request
+        "401":
+          description: Unauthorized
+        "403":
+          description: Forbidden
+components:
+  schemas:
+    Account:
+      required:
+      - email
+      - first_name
+      - last_name
+      - password
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        first_name:
+          type: string
+          example: Jane
+        last_name:
+          type: string
+          example: Doe
+        password:
+          type: string
+          format: password
+          writeOnly: true
+          example: somepassword
+        email:
+          type: string
+          format: email
+          example: jane.doe@example.com
+        account_created:
+          type: string
+          format: date-time
+          readOnly: true
+          example: 2016-08-29T09:12:33.001Z
+        account_updated:
+          type: string
+          format: date-time
+          readOnly: true
+          example: 2016-08-29T09:12:33.001Z
+    Assignment:
+      required:
+      - deadline
+      - name
+      - num_of_attemps
+      - points
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name:
+          type: string
+          example: Assignment 01
+        points:
+          maximum: 100
+          minimum: 1
+          type: number
+          example: 10
+        num_of_attemps:
+          maximum: 100
+          minimum: 1
+          type: number
+          example: 3
+        deadline:
+          type: string
+          format: date-time
+          example: 2016-08-29T09:12:33.001Z
+        assignment_created:
+          type: string
+          format: date-time
+          readOnly: true
+          example: 2016-08-29T09:12:33.001Z
+        assignment_updated:
+          type: string
+          format: date-time
+          readOnly: true
+          example: 2016-08-29T09:12:33.001Z
+    Submission:
+      required:
+      - assignment_id
+      - deadline
+      - num_of_attemps
+      - submission_url
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        assignment_id:
+          type: string
+          format: uuid
+          readOnly: true
+          example: daca41f5-08e4-4845-860c-1d0164422f5d
+        submission_url:
+          type: string
+          format: url
+          example: https://github.com/tparikh/myrepo/archive/refs/tags/v1.0.0.zip
+        submission_date:
+          type: string
+          format: date-time
+          readOnly: true
+          example: 2016-08-29T09:12:33.001Z
+        submission_updated:
+          type: string
+          format: date-time
+          readOnly: true
+          example: 2016-08-29T09:12:33.001Z
