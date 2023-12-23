@@ -106,14 +106,6 @@ Here is a brief overview of the AWS components by their functionality involved i
 | Cloudwatch metrics and logs | Web application logs and metrics are exported to cloudwatch for more insights and observability                                      |
 
 
-1. Traffic encryption and DNS:
-   -  A Route53 hosted zone houses all the records
-   -  AWS Certificate Manager houses the SSL certificate that is leveraged by the Application Load Balancer (ALB) to    	ensure that traffic from the users is HTTPS only
-
-2. Load Balancing and Autoscaling:
-    - A client-facing Application Load Balancer equipped with the aforementioned SSL certificate listens in on port 443 for HTTPS traffic from users.
-    - The ALB forwards traffic to target Autoscaling Groups (ASGs), which is the web application itself leveraging SpringBoot and Java runtime. There i
-
 ## UML Diagram and Endpoints
 
 UML Diagram for the application is depicted below:
