@@ -2,7 +2,7 @@
 # Cloud-Native Web Application
 This repository hosts the source code of a cloud-native backend web application based on SpringBoot framework in Kotlin, built iteratively for the *CSYE-6225* graduate course titled **Network Structures and Cloud Computing** at Northeastern University in the Fall 2023 semester.
 
-Swagger specification can be found here: [https://gouthamhusky.github.io/WebApp/](https://gouthamhusky.github.io/WebApp/)
+The OpenAPI specification for the application's endpoints is hosted here: [https://app.swaggerhub.com/apis/GouthamKanags/CSYE-6225_WebApp/)
 
 ## AWS Architecture
 
