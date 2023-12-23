@@ -56,7 +56,7 @@ jobs:
         run: packer init ./build-ami.pkr.hcl
 
       - name: Run `packer build`
-        run: packer build -var-file=./build-ami.pkrvars.hcl  build-ami.pkr.hcl
+        run: packer build -var-file=./packer/build-ami.pkrvars.hcl  ./packer/build-ami.pkr.hcl
 
   refresh-instances:
     needs: packer
