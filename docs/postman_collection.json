@@ -1,0 +1,354 @@
+{
+	"info": {
+		"_postman_id": "2c471bed-c16f-467c-b965-087f1c27ca8f",
+		"name": "CSYE-6225: Webapp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13666351"
+	},
+	"item": [
+		{
+			"name": "Health endpoint",
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{remote-ip}}:{{port}}/healthz",
+					"protocol": "https",
+					"host": [
+						"{{remote-ip}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"healthz"
+					],
+					"query": [
+						{
+							"key": "dsjnskjnf",
+							"value": "dsfs",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create new assignment",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"csye assignment 1\",\n  \"points\": 10,\n  \"num_of_attempts\": 5,\n  \"deadline\": \"2023-12-05T22:35:00.001Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{remote-ip}}:{{port}}/v3/assignments",
+					"protocol": "https",
+					"host": [
+						"{{remote-ip}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v3",
+						"assignments"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Submission",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"submission_url\": \"https://github.com/tparikh/myrepo/archive/refs/tags/v1.0.0.zip\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{remote-ip}}:{{port}}/v1/assignments/6a06626b-4ef8-46ed-99d2-c3a966169418/submission",
+					"protocol": "https",
+					"host": [
+						"{{remote-ip}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v1",
+						"assignments",
+						"6a06626b-4ef8-46ed-99d2-c3a966169418",
+						"submission"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update existing assignment",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Assignment 01-update\",\n  \"points\": 1,\n  \"num_of_attempts\": 2,\n  \"deadline\": \"2023-11-29T09:12:33.001Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{remote-ip}}:{{port}}/v1/assignments/0ba78db3-a812-4039-a182-e02551a9a29a",
+					"protocol": "https",
+					"host": [
+						"{{remote-ip}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v1",
+						"assignments",
+						"0ba78db3-a812-4039-a182-e02551a9a29a"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all assignments",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{remote-ip}}:{{port}}/v3/assignments",
+					"protocol": "https",
+					"host": [
+						"{{remote-ip}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v3",
+						"assignments"
+					],
+					"query": [
+						{
+							"key": "efnef",
+							"value": "dfsf",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get assignment by id",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"name\": \"Assignment 01\",\n  \"points\": 10,\n  \"num_of_attemps\": 3,\n  \"deadline\": \"2016-08-29T09:12:33.001Z\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{remote-ip}}:{{port}}/v1/assignments/dbcfaa7f-df80-4d93-9f28-6c3c6c3f3f13",
+					"protocol": "https",
+					"host": [
+						"{{remote-ip}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v1",
+						"assignments",
+						"dbcfaa7f-df80-4d93-9f28-6c3c6c3f3f13"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "delete assignment by id",
+			"request": {
+				"auth": {
+					"type": "basic",
+					"basic": [
+						{
+							"key": "password",
+							"value": "{{password}}",
+							"type": "string"
+						},
+						{
+							"key": "username",
+							"value": "{{username}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "https://{{remote-ip}}:{{port}}/v1/assignments/0ba78db3-a812-4039-a182-e02551a9a29a",
+					"protocol": "https",
+					"host": [
+						"{{remote-ip}}"
+					],
+					"port": "{{port}}",
+					"path": [
+						"v1",
+						"assignments",
+						"0ba78db3-a812-4039-a182-e02551a9a29a"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "remote-ip",
+			"value": "demo.gouthamhusky.me",
+			"type": "string"
+		},
+		{
+			"key": "port",
+			"value": "80",
+			"type": "string"
+		},
+		{
+			"key": "username",
+			"value": "kanahasabai.g@northeastern.edu",
+			"type": "string"
+		},
+		{
+			"key": "password",
+			"value": "password",
+			"type": "string"
+		}
+	]
+}
