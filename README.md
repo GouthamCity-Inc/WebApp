@@ -40,6 +40,7 @@ Typically application flow comprises of the following steps:
 Here is a brief overview of the AWS components by their functionality involved in driving the use cases of the application:
 
 ### DNS & Traffic encryption
+---
 
 
 | **AWS Service/Component**     | **Description**                                                                                                                                                 |
@@ -48,7 +49,7 @@ Here is a brief overview of the AWS components by their functionality involved i
 | AWS Certificate Manager (ACM) | Holds the SSL certification that was acquired, enabling HTTPS communication betweeen users and the load balancer                                                |
 
 ### Compute & Storage
-
+---
 
 | **AWS Service/Component** | **Description**                                                                                               |
 |---------------------------|---------------------------------------------------------------------------------------------------------------|
@@ -58,6 +59,7 @@ Here is a brief overview of the AWS components by their functionality involved i
 | AutoScaling Group         | Configured with minimum: 1, maximum: 3 and desired: 2 instances and a launch template with the custom AMI     |
 
 ### Databases
+---
 
 
 | **AWS Service/Component** | **Description**                                                                                                       |
@@ -65,7 +67,7 @@ Here is a brief overview of the AWS components by their functionality involved i
 | RDS                       | db.t3.micro backed MariaDB instance with 20GiB storage, 1GB RAM hosted in a Multi-AZ deployment for high availability |
 
 ### Networking and Security
-
+---
 
 | **AWS Component/Service** | **Description**                                                                                                                                                                                                                                                                                                                                                 |
 |---------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -77,6 +79,7 @@ Here is a brief overview of the AWS components by their functionality involved i
 
 ### Serverless Components
 ---
+
 | **AWS Service/Component**              | **Description**                                                                                                                                                                                                                                                                                                                                                   |
 |----------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | Simple Notification Service(SNS) topic | Standard topic that gets messages from the web application when users hits the /submission endpoint                                                                                                                                                                                                                                                               |
@@ -85,6 +88,7 @@ Here is a brief overview of the AWS components by their functionality involved i
 
 ### Identity and Access Management
 ---
+
 | **AWS Service/Component** | **Description**                                                                                          |
 |---------------------------|----------------------------------------------------------------------------------------------------------|
 | IAM - DynamoDB policy     | RBAC policy that enables the lambda runtime to create items in dynamoDB table                            |
@@ -93,6 +97,7 @@ Here is a brief overview of the AWS components by their functionality involved i
 | IAM - Github user         | enables GitHub workflow to perform EC2 instance refresh as part of CI/CD                                 |
 
 ### Observability
+---
 
 | **AWS Service/Component**   | **Description**                                                                                                                      |
 |-----------------------------|--------------------------------------------------------------------------------------------------------------------------------------|
